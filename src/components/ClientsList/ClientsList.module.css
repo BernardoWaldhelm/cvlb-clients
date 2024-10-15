@@ -1,0 +1,57 @@
+.container_table {
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  padding: 0 20px;
+}
+
+th,
+td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.table_header {
+  background-color: #f2f2f2;
+}
+.table_header__item {
+  font-weight: bold;
+  text-align: center;
+}
+.table_main__item {
+  text-align: center;
+  min-height: 20px;
+}
+.table_main__btns {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 15px;
+  min-height: 21px;
+}
+tr:hover {
+  background-color: #f1f1f1;
+}
+
+.button_delete,
+.button_edit {
+  background-color: transparent;
+  border: none;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  font-size: 0;
+  padding: 0;
+  margin: 0;
+}
+.button_delete img,
+.button_edit img {
+  width: 20px;
+  height: 20px;
+}
