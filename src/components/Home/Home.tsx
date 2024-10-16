@@ -2,15 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ClientesList from "../ClientsList/ClientsList";
 import styles from "./Home.module.css";
-
-interface Cliente {
-  docNumber: number;
-  nome: string;
-  sobrenome: string;
-  email: string;
-  telefone: string;
-  nascimento: string;
-}
+import { Cliente } from "../ClientTypings/ClientTypings";
 
 const Home: React.FC = () => {
   const [clientes, setClientes] = useState<Cliente[]>([]);

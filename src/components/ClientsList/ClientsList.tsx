@@ -4,29 +4,23 @@ import styles from "./ClientsList.module.css";
 import Editar from "../../assets/editar.png";
 import Remove from "../../assets/excluir.png";
 
-// Assumindo que a tipagem Cliente esteja definida como:
-interface Cliente {
-  docNumber: number;
-  nome: string;
-  sobrenome: string;
-  email: string;
-  telefone: string;
-  nascimento: string;
-}
+import { Cliente } from "../ClientTypings/ClientTypings";
+import ModalDelete from "../ModalDelete/ModalDelete";
 
 const ClientesList = () => {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [filteredClientes, setFilteredClientes] = useState<Cliente[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal de confirmação
+  const [selectedDocNumber, setSelectedDocNumber] = useState<number | null>(
+    null
+  ); // Cliente selecionado
 
   useEffect(() => {
-    // Busca os clientes ao montar o componente
     const fetchClientes = async () => {
       try {
         const response = await axios.get("http://localhost:8080/clientes");
         setClientes(response.data);
-        console.log(response.data, "data");
-
-        setFilteredClientes(response.data); // Exibimos todos os clientes por padrão
+        setFilteredClientes(response.data);
       } catch (error) {
         console.error("Erro ao buscar clientes", error);
       }
@@ -34,7 +28,6 @@ const ClientesList = () => {
     fetchClientes();
   }, []);
 
-  // Função de deletar cliente
   const handleDelete = async (docNumber: number) => {
     try {
       await axios.delete(`http://localhost:8080/clientes/${docNumber}`);
@@ -43,10 +36,21 @@ const ClientesList = () => {
       );
       setFilteredClientes(
         filteredClientes.filter((cliente) => cliente.docNumber !== docNumber)
-      ); // Atualizar lista filtrada
+      );
+      closeModal();
     } catch (error) {
       console.error("Erro ao excluir cliente", error);
     }
+  };
+
+  const openModal = (docNumber: number) => {
+    setSelectedDocNumber(docNumber);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedDocNumber(null);
   };
 
   return (
@@ -86,7 +90,7 @@ const ClientesList = () => {
                 </button>
                 <button
                   className={styles.button_delete}
-                  onClick={() => handleDelete(cliente.docNumber)}
+                  onClick={() => openModal(cliente.docNumber)} // Abre o modal
                   title="Excluir"
                 >
                   <img src={Remove} alt="Icon de Excluir" />
@@ -96,6 +100,14 @@ const ClientesList = () => {
           ))}
         </tbody>
       </table>
+
+      {isModalOpen && (
+        <ModalDelete
+          closeModal={closeModal}
+          selectedDocNumber={selectedDocNumber}
+          handleDelete={handleDelete}
+        />
+      )}
     </div>
   );
 };

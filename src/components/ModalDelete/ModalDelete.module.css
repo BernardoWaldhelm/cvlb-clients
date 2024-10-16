@@ -1,0 +1,82 @@
+.modal {
+  background: rgba(0, 0, 0, 0.7); /* Fundo com transparência escura */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal_close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #000000;
+  font-size: 20px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+}
+
+.modal_content {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  animation: fadeIn 0.3s ease-in-out;
+
+  position: relative;
+}
+
+.modal p {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.modal_actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.modal_confirm,
+.modal_cancel {
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  width: 50%;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.modal_cancel {
+  background: #b13333;
+}
+
+.modal_confirm {
+  background-color: #4caf50;
+}
+
+.modal_confirm:hover {
+  background-color: #45a049;
+}
+
+.modal_cancel:hover {
+  background-color: #d32f2f;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
