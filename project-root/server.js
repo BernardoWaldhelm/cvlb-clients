@@ -7,6 +7,7 @@ const fs = require("fs");
 const yaml = require("js-yaml");
 const path = require("path");
 const clientesRoutes = require("./routes/clientesRoutes");
+const cors = require("cors");
 
 const serverPort = 8080;
 
@@ -23,6 +24,8 @@ app.use(express.json());
 
 // Middleware para o Swagger UI
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+app.use(cors());
 
 // Utiliza suas rotas
 app.use("/", clientesRoutes);
