@@ -21,6 +21,7 @@
     "oas3-tools": "^2.2.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-modal": "^3.16.1",
     "react-router-dom": "^6.27.0",
     "react-scripts": "5.0.1",
     "sqlite3": "^5.1.7",
@@ -54,6 +55,7 @@
     ]
   },
   "devDependencies": {
+    "@types/react-modal": "^3.16.3",
     "concurrently": "^9.0.1"
   }
 }

@@ -1,4 +1,5 @@
 import React from "react";
+import Modal from "react-modal";
 import styles from "./ModalDelete.module.css";
 
 interface ModalDeleteProps {
@@ -7,33 +8,37 @@ interface ModalDeleteProps {
   handleDelete: (docNumber: number) => void;
 }
 
+Modal.setAppElement("#root"); // Defina o elemento root para acessibilidade
+
 const ModalDelete: React.FC<ModalDeleteProps> = ({
   selectedDocNumber,
   closeModal,
   handleDelete,
 }) => {
-  if (selectedDocNumber === null) return null;
-
   return (
-    <div className={styles.modal}>
-      <div className={styles.modal_content}>
-        <button className={styles.modal_close} onClick={closeModal}>
-          X
+    <Modal
+      isOpen={selectedDocNumber !== null}
+      onRequestClose={closeModal}
+      className={styles.modal_content}
+      overlayClassName={styles.modal}
+      contentLabel="Confirmação de Exclusão"
+    >
+      <button className={styles.modal_close} onClick={closeModal}>
+        X
+      </button>
+      <p>Excluir o cliente com número de documento: {selectedDocNumber}?</p>
+      <div className={styles.modal_actions}>
+        <button
+          className={styles.modal_confirm}
+          onClick={() => selectedDocNumber && handleDelete(selectedDocNumber)}
+        >
+          Confirmar
         </button>
-        <p>Excluir o cliente com número de documento: {selectedDocNumber}?</p>
-        <div className={styles.modal_actions}>
-          <button
-            className={styles.modal_confirm}
-            onClick={() => handleDelete(selectedDocNumber)}
-          >
-            Confirmar
-          </button>
-          <button className={styles.modal_cancel} onClick={closeModal}>
-            Cancelar
-          </button>
-        </div>
+        <button className={styles.modal_cancel} onClick={closeModal}>
+          Cancelar
+        </button>
       </div>
-    </div>
+    </Modal>
   );
 };
 
