@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from "react";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import ClientesList from "../ClientsList/ClientsList";
 import ModalAddClient from "../ModalAddClient/ModalAddClient";
+import ModalEditClient from "../ModalEditClient/ModalEditClient";
 import styles from "./Home.module.css";
-import { Cliente } from "../ClientTypings/ClientTypings";
+import { ToastContainer } from "react-toastify";
+import { Cliente } from "../utils/ClientTypings";
 
 const Home: React.FC = () => {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(null);
   const clientsPerPage = 8;
 
   useEffect(() => {
@@ -52,13 +57,32 @@ const Home: React.FC = () => {
     setClientes((prevClientes) => [...prevClientes, cliente]);
   };
 
+  const handleEditCliente = (updatedCliente: Cliente) => {
+    setClientes((prevClientes) =>
+      prevClientes.map((cliente) =>
+        cliente.docNumber === updatedCliente.docNumber
+          ? updatedCliente
+          : cliente
+      )
+    );
+    setIsEditModalOpen(false);
+    setSelectedCliente(null);
+  };
+
+  const openEditModal = (cliente: Cliente) => {
+    setSelectedCliente(cliente);
+    setIsEditModalOpen(true);
+  };
+
   return (
     <div className={styles.main}>
       <h1>Lista de Clientes</h1>
+      <ToastContainer />
       <div className={styles.home_button_input}>
         <button
           className={styles.addButton}
-          onClick={() => setIsModalOpen(true)} // Abre o modal
+          onClick={() => setIsModalOpen(true)}
+          title="Adicionar cliente"
         >
           Adicionar Cliente
         </button>
@@ -73,7 +97,11 @@ const Home: React.FC = () => {
           }}
         />
       </div>
-      <ClientesList clientes={currentClientes} onDelete={handleDelete} />
+      <ClientesList
+        clientes={currentClientes}
+        onDelete={handleDelete}
+        onEdit={openEditModal}
+      />
       <div className={styles.pagination}>
         {Array.from(
           { length: Math.ceil(filteredClientes.length / clientsPerPage) },
@@ -90,11 +118,20 @@ const Home: React.FC = () => {
           </button>
         ))}
       </div>
+
       <ModalAddClient
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
         onAddCliente={handleAddCliente}
       />
+      {selectedCliente && (
+        <ModalEditClient
+          isOpen={isEditModalOpen}
+          onRequestClose={() => setIsEditModalOpen(false)}
+          cliente={selectedCliente}
+          onEditCliente={handleEditCliente}
+        />
+      )}
     </div>
   );
 };

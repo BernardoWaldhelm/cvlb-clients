@@ -3,25 +3,35 @@ import axios from "axios";
 import styles from "./ClientsList.module.css";
 import Editar from "../../assets/editar.png";
 import Remove from "../../assets/excluir.png";
-import { Cliente } from "../ClientTypings/ClientTypings";
+import { Cliente } from "../utils/ClientTypings";
 import ModalDelete from "../ModalDelete/ModalDelete";
+import ModalEditClient from "../ModalEditClient/ModalEditClient";
+import { toast } from "react-toastify";
 
 interface ClientesListProps {
   clientes: Cliente[];
-  onDelete: (docNumber: number) => void; // Função para excluir clientes
+  onDelete: (docNumber: number) => void;
+  onEdit: (cliente: Cliente) => void;
 }
 
-const ClientesList: React.FC<ClientesListProps> = ({ clientes, onDelete }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal de confirmação
+const ClientesList: React.FC<ClientesListProps> = ({
+  clientes,
+  onDelete,
+  onEdit,
+}) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDocNumber, setSelectedDocNumber] = useState<number | null>(
     null
-  ); // Cliente selecionado
+  );
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(null);
 
   const handleDelete = async (docNumber: number) => {
     try {
       await axios.delete(`http://localhost:8080/clientes/${docNumber}`);
-      onDelete(docNumber); // Chama a função passada para atualizar a lista
+      onDelete(docNumber);
       closeModal();
+      toast.error("Cliente removido com sucesso!");
     } catch (error) {
       console.error("Erro ao excluir cliente", error);
     }
@@ -35,6 +45,21 @@ const ClientesList: React.FC<ClientesListProps> = ({ clientes, onDelete }) => {
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedDocNumber(null);
+  };
+
+  const openEditModal = (cliente: Cliente) => {
+    setSelectedCliente(cliente);
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedCliente(null);
+  };
+
+  const handleEditCliente = (cliente: Cliente) => {
+    onEdit(cliente);
+    closeEditModal();
   };
 
   return (
@@ -66,15 +91,13 @@ const ClientesList: React.FC<ClientesListProps> = ({ clientes, onDelete }) => {
                 <button
                   className={styles.button_edit}
                   title="Editar"
-                  onClick={() => {
-                    /* Redirecionar para a página de edição de cliente */
-                  }}
+                  onClick={() => openEditModal(cliente)}
                 >
                   <img src={Editar} alt="Icon de Editar" />
                 </button>
                 <button
                   className={styles.button_delete}
-                  onClick={() => openModal(cliente.docNumber)} // Abre o modal
+                  onClick={() => openModal(cliente.docNumber)}
                   title="Excluir"
                 >
                   <img src={Remove} alt="Icon de Excluir" />
@@ -90,6 +113,15 @@ const ClientesList: React.FC<ClientesListProps> = ({ clientes, onDelete }) => {
           closeModal={closeModal}
           selectedDocNumber={selectedDocNumber}
           handleDelete={handleDelete}
+        />
+      )}
+
+      {isEditModalOpen && selectedCliente && (
+        <ModalEditClient
+          isOpen={isEditModalOpen}
+          onRequestClose={closeEditModal}
+          onEditCliente={handleEditCliente}
+          cliente={selectedCliente}
         />
       )}
     </div>

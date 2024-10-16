@@ -8,7 +8,7 @@ interface ModalDeleteProps {
   handleDelete: (docNumber: number) => void;
 }
 
-Modal.setAppElement("#root"); // Defina o elemento root para acessibilidade
+Modal.setAppElement("#root");
 
 const ModalDelete: React.FC<ModalDeleteProps> = ({
   selectedDocNumber,

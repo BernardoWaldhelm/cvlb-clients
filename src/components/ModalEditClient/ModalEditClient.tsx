@@ -1,42 +1,54 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
-import styles from "./ModalAddClient.module.css";
+import styles from "./ModalEditClient.module.css";
 import axios from "axios";
+import { Cliente } from "../utils/ClientTypings";
 import { toast } from "react-toastify";
 import {
-  validateCPF,
   validateNome,
   validateEmail,
   validateTelefone,
   validateNascimento,
 } from "../utils/validation";
 
-interface AddClienteModalProps {
+interface EditClienteModalProps {
   isOpen: boolean;
   onRequestClose: () => void;
-  onAddCliente: (cliente: any) => void;
+  onEditCliente: (cliente: Cliente) => void;
+  cliente: Cliente;
 }
 
-const ModalAddClient: React.FC<AddClienteModalProps> = ({
+const ModalEditClient: React.FC<EditClienteModalProps> = ({
   isOpen,
   onRequestClose,
-  onAddCliente,
+  onEditCliente,
+  cliente,
 }) => {
-  const [docNumber, setDocNumber] = useState<number | undefined>();
-  const [nome, setNome] = useState<string>("");
-  const [sobrenome, setSobrenome] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [telefone, setTelefone] = useState<string>("");
-  const [nascimento, setNascimento] = useState<string>("");
+  const [docNumber, setDocNumber] = useState<number>(cliente.docNumber);
+  const [nome, setNome] = useState<string>(cliente.nome);
+  const [sobrenome, setSobrenome] = useState<string>(cliente.sobrenome);
+  const [email, setEmail] = useState<string>(cliente.email);
+  const [telefone, setTelefone] = useState<string>(cliente.telefone);
+  const [nascimento, setNascimento] = useState<string>(cliente.nascimento);
   const [error, setError] = useState<string>("");
 
+  useEffect(() => {
+    setDocNumber(cliente.docNumber);
+    setNome(cliente.nome);
+    setSobrenome(cliente.sobrenome);
+    setEmail(cliente.email);
+    setTelefone(cliente.telefone);
+    setNascimento(cliente.nascimento);
+    setError("");
+  }, [cliente]);
+
   const resetForm = () => {
-    setDocNumber(undefined);
-    setNome("");
-    setSobrenome("");
-    setEmail("");
-    setTelefone("");
-    setNascimento("");
+    setDocNumber(cliente.docNumber);
+    setNome(cliente.nome);
+    setSobrenome(cliente.sobrenome);
+    setEmail(cliente.email);
+    setTelefone(cliente.telefone);
+    setNascimento(cliente.nascimento);
     setError("");
   };
 
@@ -44,10 +56,6 @@ const ModalAddClient: React.FC<AddClienteModalProps> = ({
     e.preventDefault();
     setError("");
 
-    if (!validateCPF(docNumber)) {
-      setError("O documento deve ser um CPF válido com 11 dígitos.");
-      return;
-    }
     if (!validateNome(nome)) {
       setError("O nome deve conter apenas letras.");
       return;
@@ -69,7 +77,7 @@ const ModalAddClient: React.FC<AddClienteModalProps> = ({
       return;
     }
 
-    const cliente = {
+    const updatedCliente = {
       docNumber,
       nome,
       sobrenome,
@@ -79,49 +87,43 @@ const ModalAddClient: React.FC<AddClienteModalProps> = ({
     };
 
     try {
-      const response = await axios.post(
-        "http://localhost:8080/novoCliente",
-        cliente
+      const response = await axios.put(
+        `http://localhost:8080/clientes/${docNumber}`,
+        updatedCliente
       );
-      onAddCliente(response.data);
+      onEditCliente(response.data);
       resetForm();
       onRequestClose();
-      toast.success("Cliente adicionado com sucesso!");
+      toast.success("Cliente editado com sucesso!");
     } catch (err) {
       setError(
-        "Erro ao adicionar cliente. Verifique os dados e tente novamente."
+        "Erro ao atualizar cliente. Verifique os dados e tente novamente."
       );
     }
-  };
-
-  const handleClose = () => {
-    resetForm();
-    onRequestClose();
   };
 
   return (
     <Modal
       isOpen={isOpen}
-      onRequestClose={handleClose}
-      contentLabel="Adicionar Cliente"
+      onRequestClose={onRequestClose}
+      contentLabel="Editar Cliente"
       className={styles.modal}
       overlayClassName={styles.overlay}
     >
       <h2 className={styles.modal_title}>
-        Adicionar Cliente{" "}
-        <button className={styles.modal_close} onClick={handleClose}>
+        Editar Cliente{" "}
+        <button className={styles.modal_close} onClick={onRequestClose}>
           X
         </button>
       </h2>
+      {error && <p className={styles.error}>{error}</p>}
       <form onSubmit={handleSubmit}>
         <div className={styles.input_group}>
           <label className={styles.label}>CPF:</label>
           <input
             type="number"
             value={docNumber}
-            onChange={(e) => setDocNumber(Number(e.target.value))}
-            placeholder="000.000.000-00"
-            required
+            readOnly
             className={styles.input}
           />
         </div>
@@ -131,7 +133,6 @@ const ModalAddClient: React.FC<AddClienteModalProps> = ({
             type="text"
             value={nome}
             onChange={(e) => setNome(e.target.value)}
-            placeholder="Bernardo"
             required
             className={styles.input}
           />
@@ -142,7 +143,6 @@ const ModalAddClient: React.FC<AddClienteModalProps> = ({
             type="text"
             value={sobrenome}
             onChange={(e) => setSobrenome(e.target.value)}
-            placeholder="Waldhelm"
             required
             className={styles.input}
           />
@@ -153,7 +153,6 @@ const ModalAddClient: React.FC<AddClienteModalProps> = ({
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="pW9X5@example.com"
             required
             className={styles.input}
           />
@@ -164,7 +163,7 @@ const ModalAddClient: React.FC<AddClienteModalProps> = ({
             type="text"
             value={telefone}
             onChange={(e) => setTelefone(e.target.value)}
-            placeholder="(00) 00000-0000"
+            required
             className={styles.input}
           />
         </div>
@@ -174,12 +173,12 @@ const ModalAddClient: React.FC<AddClienteModalProps> = ({
             type="date"
             value={nascimento}
             onChange={(e) => setNascimento(e.target.value)}
+            required
             className={styles.input}
           />
         </div>
-        {error && <p className={styles.error}>{error}</p>}
-        <button type="submit">Adicionar Cliente</button>
-        <button type="button" onClick={handleClose}>
+        <button type="submit">Salvar Alterações</button>
+        <button type="button" onClick={onRequestClose}>
           Cancelar
         </button>
       </form>
@@ -187,4 +186,4 @@ const ModalAddClient: React.FC<AddClienteModalProps> = ({
   );
 };
 
-export default ModalAddClient;
+export default ModalEditClient;
