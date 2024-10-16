@@ -42,7 +42,7 @@ const ClientesList: React.FC<ClientesListProps> = ({ clientes, onDelete }) => {
       <table className={styles.table}>
         <thead>
           <tr className={styles.table_header}>
-            <th className={styles.table_header__item}>Documento</th>
+            <th className={styles.table_header__item}>CPF</th>
             <th className={styles.table_header__item}>Nome</th>
             <th className={styles.table_header__item}>Email</th>
             <th className={styles.table_header__item}>Telefone</th>
