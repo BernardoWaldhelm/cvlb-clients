@@ -1,42 +1,26 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import styles from "./ClientsList.module.css";
 import Editar from "../../assets/editar.png";
 import Remove from "../../assets/excluir.png";
-
 import { Cliente } from "../ClientTypings/ClientTypings";
 import ModalDelete from "../ModalDelete/ModalDelete";
 
-const ClientesList = () => {
-  const [clientes, setClientes] = useState<Cliente[]>([]);
-  const [filteredClientes, setFilteredClientes] = useState<Cliente[]>([]);
+interface ClientesListProps {
+  clientes: Cliente[];
+  onDelete: (docNumber: number) => void; // Função para excluir clientes
+}
+
+const ClientesList: React.FC<ClientesListProps> = ({ clientes, onDelete }) => {
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal de confirmação
   const [selectedDocNumber, setSelectedDocNumber] = useState<number | null>(
     null
   ); // Cliente selecionado
 
-  useEffect(() => {
-    const fetchClientes = async () => {
-      try {
-        const response = await axios.get("http://localhost:8080/clientes");
-        setClientes(response.data);
-        setFilteredClientes(response.data);
-      } catch (error) {
-        console.error("Erro ao buscar clientes", error);
-      }
-    };
-    fetchClientes();
-  }, []);
-
   const handleDelete = async (docNumber: number) => {
     try {
       await axios.delete(`http://localhost:8080/clientes/${docNumber}`);
-      setClientes(
-        clientes.filter((cliente) => cliente.docNumber !== docNumber)
-      );
-      setFilteredClientes(
-        filteredClientes.filter((cliente) => cliente.docNumber !== docNumber)
-      );
+      onDelete(docNumber); // Chama a função passada para atualizar a lista
       closeModal();
     } catch (error) {
       console.error("Erro ao excluir cliente", error);
@@ -67,7 +51,7 @@ const ClientesList = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredClientes.map((cliente) => (
+          {clientes.map((cliente) => (
             <tr key={cliente.docNumber} className={styles.table_main}>
               <td className={styles.table_main__item}>{cliente.docNumber}</td>
               <td className={styles.table_main__item}>

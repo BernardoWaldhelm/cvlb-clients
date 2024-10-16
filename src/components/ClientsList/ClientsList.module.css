@@ -1,6 +1,12 @@
 .container_table {
   max-width: 1500px;
-  margin: 0 auto;
+  margin: 30px auto 0;
+}
+
+@media (max-width: 1025px) {
+  .container_table {
+    overflow: auto;
+  }
 }
 
 .table {
@@ -25,7 +31,7 @@ td {
 }
 .table_main__item {
   text-align: center;
-  min-height: 20px;
+  height: 42px;
 }
 .table_main__btns {
   display: flex;
@@ -33,10 +39,10 @@ td {
   justify-content: center;
   text-align: center;
   gap: 15px;
-  min-height: 21px;
+  height: 42px;
 }
 tr:hover {
-  background-color: #f1f1f1;
+  background-color: #e4fbfc67;
 }
 
 .button_delete,

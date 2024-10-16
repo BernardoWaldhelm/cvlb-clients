@@ -6,7 +6,13 @@
   padding: 10px 20px;
   background-color: #fff;
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-  margin-top: 50px;
+  max-width: -webkit-fill-available;
+}
+@media (max-width: 768px) {
+  .footer {
+    flex-direction: column;
+    margin-top: 20px;
+  }
 }
 
 .copyright {
